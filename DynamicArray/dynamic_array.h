@@ -35,19 +35,19 @@ int da_count_value(DynamicArray *arr, int value); // Return the number of times 
 // Adding and Inserting
 void da_add_first(DynamicArray *arr, int value); // Add a value to the beginning of the array
 void da_add_last(DynamicArray *arr, int value); // Add a value to the end of the array
-void da_insert(DynamicArray *arr, int idx, int value); // Insert a value at the specified index
+void da_insert(DynamicArray *arr, size_t idx, int value); // Insert a value at the specified index
 
 // Removing
 void da_remove_first(DynamicArray *arr); // Remove the first element from the array
 void da_remove_last(DynamicArray *arr); // Remove the last element from the array
-void da_remove(DynamicArray *arr, int idx); // Remove the element at the specified index
+void da_remove(DynamicArray *arr, size_t idx); // Remove the element at the specified index
 void da_remove_value(DynamicArray *arr, int value); // Remove the first occurrence of a specific value from the array 
 void da_remove_nth_value(DynamicArray *arr, int value, int n);  //  Remove the nth occurrence of a specific value from the array
 
 // Replacement and Swapping
 void da_replace(DynamicArray *arr, int old_value, int new_value); // Replace the first occurrence of old_value with new_value
 void da_replace_nth(DynamicArray *arr, int old_value, int new_value, int n); // Replace the nth occurrence of old_value with new_value
-void da_swap(DynamicArray *arr, int i, int j); // Swap two elements by their indexes
+void da_swap(DynamicArray *arr, size_t i, size_t j); // Swap two elements by their indexes
 
 // Properties
 size_t da_size(DynamicArray *arr); // Return the current number of elements in the array
