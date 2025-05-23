@@ -28,6 +28,7 @@ void da_destroy(DynamicArray *arr)
         free(arr->data);
         free(arr);
     }
+    fprintf(stderr, "da_destroy: null array pointer\n");
 }
 
 int da_get(DynamicArray *arr, size_t idx)
@@ -100,7 +101,7 @@ int da_contains(DynamicArray *arr, int value)
         fprintf(stderr, "da_contains: null array pointer\n");
         return 0;
     }
-    
+
     for (size_t idx = 0; idx < arr->size; idx++)
         if (arr->data[idx] == value)
             return 1;
@@ -120,4 +121,60 @@ int da_count_value(DynamicArray *arr, int value)
         if (arr->data[idx] == value && ++count)
             ;
     return count;
+}
+
+static int double_capacity(DynamicArray *arr)
+{
+    int *temp_data = (int *)realloc(arr->data, 2 * (arr->capacity) * sizeof(int));
+    if (temp_data)
+    {
+        arr->data = temp_data;
+        arr->capacity *= 2;
+        return 1;
+    }
+    return -1;
+}
+
+static int is_full(DynamicArray *arr)
+{
+    return arr->size == arr->capacity;
+}
+
+void da_add_first(DynamicArray *arr, int value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_add_first: null array pointer\n");
+        return;
+    }
+
+    if (is_full(arr))
+        if (double_capacity(arr) != 1)
+        {
+            fprintf(stderr, "da_add_first: failed to allocate memory\n");
+            return;
+        }
+
+    for (size_t idx = arr->size; idx > 0; idx--)
+        arr->data[idx] = arr->data[idx - 1];
+    arr->data[0] = value;
+    arr->size++;
+}
+
+void da_add_last(DynamicArray *arr, int value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_add_last: null array pointer\n");
+        return;
+    }
+
+    if (is_full(arr))
+        if (double_capacity(arr) != 1)
+        {
+            fprintf(stderr, "da_add_last: failed to allocate memory\n");
+            return;
+        }
+
+    arr->data[arr->size++] = value;
 }
