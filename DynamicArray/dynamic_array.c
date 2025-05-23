@@ -304,3 +304,55 @@ void da_remove_nth_value(DynamicArray *arr, int value, size_t n)
     shift_left_from(arr, idx);
     try_shrink_capacity(arr);
 }
+
+void da_replace(DynamicArray *arr, int old_value, int new_value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_replace: null array pointer\n");
+        return;
+    }
+    
+    int idx_old_value = da_index_of(arr, old_value);
+    if (idx_old_value == -1)
+    {
+        fprintf(stderr, "da_replace: element %d not found in array\n", old_value);
+        return;
+    }
+    arr->data[idx_old_value] = new_value;
+}
+
+void da_replace_nth(DynamicArray *arr, int old_value, int new_value, size_t n)
+{
+        if (!arr)
+    {
+        fprintf(stderr, "da_replace_nth: null array pointer\n");
+        return;
+    }
+    
+    int idx_old_value = da_index_of_nth(arr, old_value, n);
+    if (idx_old_value == -1)
+    {
+        fprintf(stderr, "da_replace_nth: %zuth occurrence of element %d not found in array\n", n, old_value);
+        return;
+    }
+    arr->data[idx_old_value] = new_value;
+}
+
+void da_swap(DynamicArray *arr, size_t i, size_t j)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_swap: null array pointer\n");
+        return;
+    }
+    if (i >= arr->size || j >= arr->size)
+    {
+        fprintf(stderr, "da_swap: index %zu or %zu out of bounds (size = %zu)\n", i, j, arr->size);
+        return;
+    }
+    int temp;
+    temp = arr->data[i];
+    arr->data[i] = arr->data[j];
+    arr->data[j] = temp;
+}
