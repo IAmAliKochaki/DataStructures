@@ -186,9 +186,9 @@ void da_add_last(DynamicArray *arr, int value)
 }
 
 // Shift all elements left from index `start_idx`, then reduce size by 1
-static void shift_left_from(DynamicArray *arr, int start_idx)
+static void shift_left_from(DynamicArray *arr, size_t start_idx)
 {
-    for (int i = start_idx; i < arr->size - 1; i++)
+    for (size_t i = start_idx; i < arr->size - 1; i++)
         arr->data[i] = arr->data[i + 1];
     arr->size--;
 }
