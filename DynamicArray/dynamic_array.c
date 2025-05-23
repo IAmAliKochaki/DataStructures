@@ -3,12 +3,16 @@
 #include <limits.h>
 #include "dynamic_array.h"
 
+#define MIN_CAPACITY 16
+
 DynamicArray *da_create(size_t initial_capacity)
 {
     DynamicArray *new_da = (DynamicArray *)malloc(sizeof(DynamicArray));
     if (!new_da)
         return NULL;
 
+    if (initial_capacity < MIN_CAPACITY)
+        initial_capacity = MIN_CAPACITY;
     new_da->data = (int *)malloc(initial_capacity * sizeof(int));
     if (!new_da->data)
     {
@@ -28,7 +32,8 @@ void da_destroy(DynamicArray *arr)
         free(arr->data);
         free(arr);
     }
-    fprintf(stderr, "da_destroy: null array pointer\n");
+    else
+        fprintf(stderr, "da_destroy: null array pointer\n");
 }
 
 int da_get(DynamicArray *arr, size_t idx)
@@ -75,16 +80,11 @@ int da_index_of(DynamicArray *arr, int value)
     return -1;
 }
 
-int da_index_of_nth(DynamicArray *arr, int value, int n)
+int da_index_of_nth(DynamicArray *arr, int value, size_t n)
 {
     if (!arr)
     {
         fprintf(stderr, "da_index_of_nth: null array pointer\n");
-        return -1;
-    }
-    if (n < 0)
-    {
-        fprintf(stderr, "da_index_of_nth: n must be non-negative\n");
         return -1;
     }
 
@@ -123,13 +123,17 @@ int da_count_value(DynamicArray *arr, int value)
     return count;
 }
 
-static int double_capacity(DynamicArray *arr)
+static int change_capacity(DynamicArray *arr, float factor)
 {
-    int *temp_data = (int *)realloc(arr->data, 2 * (arr->capacity) * sizeof(int));
+    size_t new_capacity = (size_t)(arr->capacity * factor);
+    if (new_capacity == arr->capacity)
+        return 1;
+
+    int *temp_data = (int *)realloc(arr->data, new_capacity * sizeof(int));
     if (temp_data)
     {
         arr->data = temp_data;
-        arr->capacity *= 2;
+        arr->capacity = new_capacity;
         return 1;
     }
     return -1;
@@ -149,7 +153,8 @@ void da_add_first(DynamicArray *arr, int value)
     }
 
     if (is_full(arr))
-        if (double_capacity(arr) != 1)
+        // Double the capacity
+        if (change_capacity(arr, 2) != 1)
         {
             fprintf(stderr, "da_add_first: failed to allocate memory\n");
             return;
@@ -170,11 +175,132 @@ void da_add_last(DynamicArray *arr, int value)
     }
 
     if (is_full(arr))
-        if (double_capacity(arr) != 1)
+        // Double capacity
+        if (change_capacity(arr, 2) != 1)
         {
             fprintf(stderr, "da_add_last: failed to allocate memory\n");
             return;
         }
 
     arr->data[arr->size++] = value;
+}
+
+// Shift all elements left from index `start_idx`, then reduce size by 1
+static void shift_left_from(DynamicArray *arr, int start_idx)
+{
+    for (int i = start_idx; i < arr->size - 1; i++)
+        arr->data[i] = arr->data[i + 1];
+    arr->size--;
+}
+
+static void try_shrink_capacity(DynamicArray *arr)
+{
+    if (arr->capacity > MIN_CAPACITY && arr->size <= arr->capacity / 4)
+    {
+        size_t new_capacity = arr->capacity / 2;
+        if (new_capacity < MIN_CAPACITY)
+            new_capacity = MIN_CAPACITY;
+
+        if (change_capacity(arr, (float)new_capacity / arr->capacity) != 1)
+            fprintf(stderr, "try_shrink_capacity: failed to allocate memory\n");
+    }
+}
+
+void da_remove_first(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_remove_first: null array pointer\n");
+        return;
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_remove_first: array is empty\n");
+        return;
+    }
+    shift_left_from(arr, 0);
+    try_shrink_capacity(arr);
+}
+
+void da_remove_last(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_remove_last: null array pointer\n");
+        return;
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_remove_last: array is empty\n");
+        return;
+    }
+    arr->size--;
+    try_shrink_capacity(arr);
+}
+
+void da_remove(DynamicArray *arr, size_t idx)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_remove: null array pointer\n");
+        return;
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_remove: array is empty\n");
+        return;
+    }
+    if (idx >= arr->size)
+    {
+        fprintf(stderr, "da_remove: index %zu out of bounds (size = %zu)\n", idx, arr->size);
+        return;
+    }
+    shift_left_from(arr, idx);
+    try_shrink_capacity(arr);
+}
+
+void da_remove_value(DynamicArray *arr, int value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_remove_value: null array pointer\n");
+        return;
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_remove_value: array is empty\n");
+        return;
+    }
+
+    int idx = da_index_of(arr, value);
+    if (idx == -1)
+    {
+        fprintf(stderr, "da_remove_value: the element %d not found in array\n", value);
+        return;
+    }
+    shift_left_from(arr, idx);
+    try_shrink_capacity(arr);
+}
+
+void da_remove_nth_value(DynamicArray *arr, int value, size_t n)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_remove_nth_value: null array pointer\n");
+        return;
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_remove_nth_value: array is empty\n");
+        return;
+    }
+
+    int idx = da_index_of_nth(arr, value, n);
+    if (idx == -1)
+    {
+        fprintf(stderr, "da_remove_nth_value: the element %d not found in array\n", value);
+        return;
+    }
+    shift_left_from(arr, idx);
+    try_shrink_capacity(arr);
 }
