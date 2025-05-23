@@ -47,10 +47,77 @@ int da_get(DynamicArray *arr, size_t idx)
 
 void da_set(DynamicArray *arr, size_t idx, int value)
 {
+    if (!arr)
+    {
+        fprintf(stderr, "da_set: null array pointer\n");
+        return;
+    }
     if (idx >= arr->size)
     {
         fprintf(stderr, "da_set: index %zu out of bounds (size = %zu)\n", idx, arr->size);
         return;
     }
     arr->data[idx] = value;
+}
+
+int da_index_of(DynamicArray *arr, int value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_index_of: null array pointer\n");
+        return -1;
+    }
+
+    for (size_t idx = 0; idx < arr->size; idx++)
+        if (arr->data[idx] == value)
+            return (int)idx;
+    return -1;
+}
+
+int da_index_of_nth(DynamicArray *arr, int value, int n)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_index_of_nth: null array pointer\n");
+        return -1;
+    }
+    if (n < 0)
+    {
+        fprintf(stderr, "da_index_of_nth: n must be non-negative\n");
+        return -1;
+    }
+
+    for (size_t idx = 0, occurrence = 0; idx < arr->size; idx++)
+        if (arr->data[idx] == value && occurrence++ == n)
+            return idx;
+    return -1;
+}
+
+int da_contains(DynamicArray *arr, int value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_contains: null array pointer\n");
+        return 0;
+    }
+    
+    for (size_t idx = 0; idx < arr->size; idx++)
+        if (arr->data[idx] == value)
+            return 1;
+    return 0;
+}
+
+int da_count_value(DynamicArray *arr, int value)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_count_value: null array pointer\n");
+        return 0;
+    }
+
+    int count = 0;
+    for (size_t idx = 0; idx < arr->size; idx++)
+        if (arr->data[idx] == value && ++count)
+            ;
+    return count;
 }
