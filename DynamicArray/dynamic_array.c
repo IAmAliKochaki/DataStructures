@@ -3,10 +3,8 @@
 #include <limits.h>
 #include "dynamic_array.h"
 
-
 #define MIN_CAPACITY 16
 #define DA_INVALID_SIZE ((size_t)-1)
-
 
 DynamicArray *da_create(size_t initial_capacity)
 {
@@ -441,4 +439,94 @@ int da_min(DynamicArray *arr)
         if (arr->data[i] < min)
             min = arr->data[i];
     return min;
+}
+
+DynamicArray *da_filter(DynamicArray *arr, int (*predicate)(int))
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_filter: null array pointer\n");
+        return NULL;
+    }
+
+    if (!predicate)
+    {
+        fprintf(stderr, "da_filter: null predicate function\n");
+        return NULL;
+    }
+
+    DynamicArray *filtered_array = da_create(MIN_CAPACITY);
+    if (!filtered_array)
+    {
+        fprintf(stderr, "da_filter: failed to allocate memory\n");
+        return NULL;
+    }
+    for (size_t i = 0; i < arr->size; i++)
+        if (predicate(arr->data[i]) == 1)
+            da_add_last(filtered_array, arr->data[i]);
+    return filtered_array;
+}
+
+DynamicArray *da_clone(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_clone: null array pointer\n");
+        return NULL;
+    }
+
+    DynamicArray *clone = da_create(arr->capacity);
+    if (!clone)
+    {
+        fprintf(stderr, "da_clone: failed to allocate memory\n");
+        return NULL;
+    }
+    for (size_t i = 0; i < arr->size; i++)
+        da_add_last(clone, arr->data[i]);
+    return clone;
+}
+
+int *da_to_array(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_to_array: null array pointer\n");
+        return NULL;
+    }
+
+    int *array = (int *)malloc(arr->size * sizeof(int));
+    if (!array)
+    {
+
+        fprintf(stderr, "da_to_array: failed to allocate memory\n");
+        return NULL;
+    }
+    for (size_t i = 0; i < arr->size; i++)
+        array[i] = arr->data[i];
+    return array;
+}
+
+DynamicArray *da_slice(DynamicArray *arr, size_t start, size_t end)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_slice: null array pointer\n");
+        return NULL;
+    }
+
+    if (start > end || end >= arr->size)
+    {
+        fprintf(stderr, "da_slice: invalid indexes for start: %zu, end: %zu\n", start, end);
+        return NULL;
+    }
+
+    DynamicArray *slice = da_create(MIN_CAPACITY);
+    if (!slice)
+    {
+        fprintf(stderr, "da_slice: failed to allocate memory\n");
+        return NULL;
+    }
+    for (size_t i = start; i <= end; i++)
+        da_add_last(slice, arr->data[i]);
+    return slice;
 }
