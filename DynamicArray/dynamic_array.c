@@ -3,7 +3,10 @@
 #include <limits.h>
 #include "dynamic_array.h"
 
+
 #define MIN_CAPACITY 16
+#define DA_INVALID_SIZE ((size_t)-1)
+
 
 DynamicArray *da_create(size_t initial_capacity)
 {
@@ -312,7 +315,7 @@ void da_replace(DynamicArray *arr, int old_value, int new_value)
         fprintf(stderr, "da_replace: null array pointer\n");
         return;
     }
-    
+
     int idx_old_value = da_index_of(arr, old_value);
     if (idx_old_value == -1)
     {
@@ -324,12 +327,12 @@ void da_replace(DynamicArray *arr, int old_value, int new_value)
 
 void da_replace_nth(DynamicArray *arr, int old_value, int new_value, size_t n)
 {
-        if (!arr)
+    if (!arr)
     {
         fprintf(stderr, "da_replace_nth: null array pointer\n");
         return;
     }
-    
+
     int idx_old_value = da_index_of_nth(arr, old_value, n);
     if (idx_old_value == -1)
     {
@@ -355,4 +358,87 @@ void da_swap(DynamicArray *arr, size_t i, size_t j)
     temp = arr->data[i];
     arr->data[i] = arr->data[j];
     arr->data[j] = temp;
+}
+
+size_t da_size(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_size: null array pointer\n");
+        return DA_INVALID_SIZE;
+    }
+    return arr->size;
+}
+
+size_t da_capacity(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_capacity: null array pointer\n");
+        return DA_INVALID_SIZE;
+    }
+    return arr->capacity;
+}
+
+int da_is_empty(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_is_empty: null array pointer\n");
+        return 1;
+    }
+    return arr->size == 0;
+}
+
+int da_equals(DynamicArray *arr1, DynamicArray *arr2)
+{
+    if (!arr1 || !arr2)
+    {
+        fprintf(stderr, "da_equals: null array pointer\n");
+        return -1;
+    }
+    if (arr1->size != arr2->size)
+        return 0;
+    for (size_t i = 0; i < arr1->size; i++)
+        if (arr1->data[i] != arr2->data[i])
+            return 0;
+    return 1;
+}
+
+int da_max(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_max: null array pointer\n");
+        return ((int)-1);
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_max: array is empty\n");
+        return ((int)-1);
+    }
+    int max = arr->data[0];
+    for (size_t i = 1; i < arr->size; i++)
+        if (arr->data[i] > max)
+            max = arr->data[i];
+    return max;
+}
+
+int da_min(DynamicArray *arr)
+{
+    if (!arr)
+    {
+        fprintf(stderr, "da_min: null array pointer\n");
+        return ((int)-1);
+    }
+    if (arr->size == 0)
+    {
+        fprintf(stderr, "da_min: array is empty\n");
+        return ((int)-1);
+    }
+    int min = arr->data[0];
+    for (size_t i = 1; i < arr->size; i++)
+        if (arr->data[i] < min)
+            min = arr->data[i];
+    return min;
 }
