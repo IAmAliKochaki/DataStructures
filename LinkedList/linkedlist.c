@@ -350,3 +350,25 @@ int ll_index_of_nth(linkedlist *ll, int value, size_t n)
 
     return -1;
 }
+
+// Properties
+size_t ll_size(linkedlist *ll)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_size: null linked list pointer\n");
+        return (size_t) - 1;
+    }
+
+    return ll->size;
+}
+int ll_is_empty(linkedlist *ll)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_is_empty: null linked list pointer\n");
+        return -1;
+    }
+
+    return ll->size == 0;
+}
