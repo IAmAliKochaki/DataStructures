@@ -236,8 +236,6 @@ void ll_remove(linkedlist *ll, size_t idx)
     free(tmp);
 }
 
-// Access and Modification
-// Return the value at the specified index.
 int ll_get(linkedlist *ll, size_t idx)
 {
     if (!ll)
@@ -265,7 +263,6 @@ int ll_get(linkedlist *ll, size_t idx)
     return current->data;
 }
 
-// Set the value at the specified index.
 void ll_set(linkedlist *ll, size_t idx, int value)
 {
     if (!ll)
@@ -291,4 +288,65 @@ void ll_set(linkedlist *ll, size_t idx, int value)
         current = current->next;
     
     current->data = value;
+}
+
+int ll_contains(linkedlist *ll, int value)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_contains: null linked list pointer\n");
+        return 0;
+    }
+
+    Node *node = ll->head;
+    while (node)
+    {
+        if (node->data == value)
+            return 1;
+        node = node->next;
+    }
+
+    return 0;
+}
+int ll_index_of(linkedlist *ll, int value)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_index_of: null linked list pointer\n");
+        return -1;
+    }
+
+    Node *node = ll->head;
+    int i = 0;
+    while (node)
+    {
+        if (node->data == value)
+            return i;
+        node = node->next;
+        i++;
+    }
+
+    return -1;
+}
+
+int ll_index_of_nth(linkedlist *ll, int value, size_t n)
+{
+
+    if (!ll)
+    {
+        fprintf(stderr, "ll_index_of_nth: null linked list pointer\n");
+        return -1;
+    }
+
+    Node *node = ll->head;
+    int i = 0, nth = 1;
+    while (node)
+    {
+        if (node->data == value && nth++ == n)
+            return i;
+        node = node->next;
+        i++;
+    }
+
+    return -1;
 }
