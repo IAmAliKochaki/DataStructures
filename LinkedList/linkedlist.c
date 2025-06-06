@@ -1,6 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 #include "linkedlist.h"
+
+
+#define LL_ERROR_VALUE INT_MIN
+
 
 linkedlist *ll_create()
 {
@@ -135,7 +140,6 @@ void ll_add(linkedlist *ll, int value, size_t idx)
     ll->size++;
 }
 
-// Remove the first element of the list.
 void ll_remove_first(linkedlist *ll)
 {
     if (!ll)
@@ -158,7 +162,6 @@ void ll_remove_first(linkedlist *ll)
     free(tmp);
 }
 
-// Remove the last element of the list.
 void ll_remove_last(linkedlist *ll)
 {
     if (!ll)
@@ -191,7 +194,6 @@ void ll_remove_last(linkedlist *ll)
     ll->size--;
 }
 
-// Remove the element at the specified index.
 void ll_remove(linkedlist *ll, size_t idx)
 {
     if (!ll)
@@ -232,4 +234,61 @@ void ll_remove(linkedlist *ll, size_t idx)
     current->next = current->next->next;
     ll->size--;
     free(tmp);
+}
+
+// Access and Modification
+// Return the value at the specified index.
+int ll_get(linkedlist *ll, size_t idx)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_get: null linked list pointer\n");
+        return LL_ERROR_VALUE;
+    }
+
+    if (ll->size == 0)
+    {
+        fprintf(stderr, "ll_get: linked list is empty.\n");
+        return LL_ERROR_VALUE;
+    }
+    
+    if (idx >= ll->size)
+    {
+        fprintf(stderr, "ll_get: index out of bounds.\n");
+        return LL_ERROR_VALUE;
+    }
+    
+    Node *current = ll->head;
+    for (size_t i = 0; i < idx; i++)
+        current = current->next;
+    
+    return current->data;
+}
+
+// Set the value at the specified index.
+void ll_set(linkedlist *ll, size_t idx, int value)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_set: null linked list pointer\n");
+        return;
+    }
+
+    if (ll->size == 0)
+    {
+        fprintf(stderr, "ll_set: linked list is empty.\n");
+        return;
+    }
+    
+    if (idx >= ll->size)
+    {
+        fprintf(stderr, "ll_set: index out of bounds.\n");
+        return;
+    }
+    
+    Node *current = ll->head;
+    for (size_t i = 0; i < idx; i++)
+        current = current->next;
+    
+    current->data = value;
 }
