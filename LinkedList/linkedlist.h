@@ -7,10 +7,10 @@
  * Struct representing a node in a singly linked list.
  * Using int for simplicity; can be adapted for other types.
  */
-typedef struct
+typedef struct Node
 {
     int data;
-    Node *next;
+    struct Node *next;
 } Node;
 
 // Struct representing a singly linked list.
