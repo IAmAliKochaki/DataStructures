@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "linkedlist.h"
 
-// Create a new linked list.
 linkedlist *ll_create()
 {
     linkedlist *new_ll = (linkedlist *)malloc(sizeof(linkedlist));
@@ -16,7 +15,6 @@ linkedlist *ll_create()
     return new_ll;
 }
 
-// Free all memory used by linked list.
 void ll_destroy(linkedlist *ll)
 {
     if (!ll)
@@ -35,9 +33,6 @@ void ll_destroy(linkedlist *ll)
     }
     free(ll);
 }
-
-// Adding
-// Add a value to the beginning of the list.
 
 static Node *create_node(int value)
 {
@@ -70,7 +65,6 @@ void ll_add_first(linkedlist *ll, int value)
     ll->size++;
 }
 
-// Add a value to the end of the list.
 void ll_add_last(linkedlist *ll, int value)
 {
     if (!ll)
@@ -99,7 +93,6 @@ void ll_add_last(linkedlist *ll, int value)
     ll->size++;
 }
 
-// Add a value to the specified index.
 void ll_add(linkedlist *ll, int value, size_t idx)
 {
     if (!ll)
@@ -140,4 +133,103 @@ void ll_add(linkedlist *ll, int value, size_t idx)
     new_node->next = current->next;
     current->next = new_node;
     ll->size++;
+}
+
+// Remove the first element of the list.
+void ll_remove_first(linkedlist *ll)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_remove_first: null linked list pointer\n");
+        return;
+    }
+
+    if (ll->size == 0)
+    {
+        fprintf(stderr, "ll_remove_first: linked list is empty.\n");
+        return;
+    }
+
+    Node *tmp = ll->head;
+    ll->head = ll->head->next;
+    if (ll->size == 1)
+        ll->tail = NULL;
+    ll->size--;
+    free(tmp);
+}
+
+// Remove the last element of the list.
+void ll_remove_last(linkedlist *ll)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_remove_last: null linked list pointer\n");
+        return;
+    }
+
+    if (ll->size == 0)
+    {
+        fprintf(stderr, "ll_remove_last: linked list is empty.\n");
+        return;
+    }
+
+    if (ll->size == 1)
+    {
+        free(ll->head);
+        ll->head = ll->tail = NULL;
+        ll->size = 0;
+        return;
+    }
+
+    Node *current = ll->head;
+    while (current->next != ll->tail)
+        current = current->next;
+
+    free(ll->tail);
+    ll->tail = current;
+    ll->tail->next = NULL;
+    ll->size--;
+}
+
+// Remove the element at the specified index.
+void ll_remove(linkedlist *ll, size_t idx)
+{
+    if (!ll)
+    {
+        fprintf(stderr, "ll_remove: null linked list pointer\n");
+        return;
+    }
+
+    if (ll->size == 0)
+    {
+        fprintf(stderr, "ll_remove: linked list is empty.\n");
+        return;
+    }
+
+    if (idx >= ll->size)
+    {
+        fprintf(stderr, "ll_remove: index out of bounds.\n");
+        return;
+    }
+
+    if (idx == 0)
+    {
+        ll_remove_first(ll);
+        return;
+    }
+
+    if (idx == ll->size - 1)
+    {
+        ll_remove_last(ll);
+        return;
+    }
+
+    Node *current = ll->head;
+    for (size_t i = 0; i < idx - 1; i++)
+        current = current->next;
+
+    Node *tmp = current->next;
+    current->next = current->next->next;
+    ll->size--;
+    free(tmp);
 }
