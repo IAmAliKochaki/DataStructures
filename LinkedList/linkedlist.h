@@ -41,8 +41,8 @@ void ll_set(linkedlist *ll, size_t idx, int value); // Set the value at the spec
 
 // Searching
 int ll_contains(linkedlist *ll, int value); // Return 1 if the list contains the value, 0 otherwise.
-int ll_index_of(linkedlist *ll, size_t idx); // Return the index of the first occurrence of the value, or -1 if not found.
-int ll_index_of_nth(linkedlist *ll, size_t idx, size_t n); // Return the index of the nth occurrence of the value, or -1 if not found.
+int ll_index_of(linkedlist *ll, int value); // Return the index of the first occurrence of the value, or -1 if not found.
+int ll_index_of_nth(linkedlist *ll, int value, size_t n); // Return the index of the nth occurrence of the value, or -1 if not found.
 
 // Properties
 size_t ll_size(linkedlist *ll); // Return the current number of elements in the list.
