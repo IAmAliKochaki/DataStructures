@@ -36,7 +36,7 @@ For a complete list of functions, see dynamic_array.h
 
 Clone the repository:
 
-    git clone https://github.com/yourusername/dynamic-array-c.git
+    git clone https://github.com/IAmAliKochaki/DataStructures.git 
     cd DynamicArray
 
 Compile:
