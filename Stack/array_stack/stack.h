@@ -11,7 +11,7 @@ typedef struct
     int *array;
 } Stack;
 
-Stack *st_create_stack(size_t capacity); // Create a new stack with the given capacity.
+Stack *st_create(size_t capacity); // Create a new stack with the given capacity.
 void st_destroy(Stack *stack); // Free the memory used by the stack.
 
 void push(Stack *stack, int value); // Pushes an integer value onto the stack.
