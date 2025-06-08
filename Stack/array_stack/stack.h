@@ -19,6 +19,6 @@ int pop(Stack *stack); // Removes and returns the top element from the stack.
 int peek(Stack *stack); // Returns the top element of the stack without removing it.
 
 int st_is_empty(Stack *stack); // Return 1 if the array is empty, 0 otherwise.
-int st_is_full(Stack *stack); // Return 1 if the array is empty, 0 otherwise.
+int st_is_full(Stack *stack); // Return 1 if the array is full, 0 otherwise.
 
 #endif // STACK_H
