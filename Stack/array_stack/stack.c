@@ -88,3 +88,25 @@ int peek(Stack *stack)
 
     return stack->array[stack->top - 1];
 }
+
+int st_is_empty(Stack *stack)
+{
+    if (!stack)
+    {
+        fprintf(stderr, "st_is_empty: null pointer stack.\n");
+        return 1;
+    }
+
+    return stack->top == 0;
+}
+
+int st_is_full(Stack *stack)
+{
+    if (!stack)
+    {
+        fprintf(stderr, "st_is_full: null pointer stack.\n");
+        return 1;
+    }
+
+    return stack->top == stack->capacity;
+}
