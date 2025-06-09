@@ -9,6 +9,7 @@ This project implements a **Stack** data structure using a fixed-size array in C
 - Pop elements from the stack
 - Peek at the top element without removing it
 - Check if the stack is full or empty
+- Get the stack current size
 - Handles edge cases gracefully (e.g. full stack, empty stack, null pointer)
 
 ## 🔧 API Overview
@@ -21,6 +22,7 @@ int pop(Stack *stack);
 int peek(Stack *stack);
 int st_is_empty(Stack *stack);
 int st_is_full(Stack *stack);
+int st_size(Stack *stack);
 ```
 For full definitions and descriptions, see stack.h.
 
