@@ -110,3 +110,14 @@ int st_is_full(Stack *stack)
 
     return stack->top == stack->capacity;
 }
+
+int st_size(Stack *stack)
+{
+    if (!stack)
+    {
+        fprintf(stderr, "st_size: null pointer stack.\n");
+        return 0;
+    }
+
+    return stack->top;
+}
