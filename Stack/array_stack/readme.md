@@ -31,7 +31,7 @@ For full definitions and descriptions, see stack.h.
 Clone the repository:
 
     git clone https://github.com/IAmAliKochaki/DataStructures.git
-    cd Stack
+    cd Stack/array_stack
 
 Compile:
 
