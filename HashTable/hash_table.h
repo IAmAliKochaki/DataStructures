@@ -14,7 +14,7 @@ typedef struct
 HashTable *ht_create(size_t initial_size); // Create a new hash table.
 void ht_destroy(HashTable *hash_table);    // Free the memory used by the hash table.
 
-void ht_add(HashTable *hash_table, int value);    // Adds a value to the table.
+int ht_add(HashTable *hash_table, int value);     // Adds a value to the table (returns 1 on success, 0 on failure).
 void ht_remove(HashTable *hash_table, int value); // Removes a value.
 
 int ht_is_empty(HashTable *hash_table); // Return 1 if the hash table is empty, 0 otherwise
