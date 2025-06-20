@@ -47,3 +47,71 @@ void ht_destroy(HashTable *hash_table)
     free(hash_table->buckets);
     free(hash_table);
 }
+
+static int hash_function(int value, int size)
+{
+    return value % size;
+}
+
+// Adds a value to the table (returns 1 on success, 0 on failure).
+int ht_add(HashTable *hash_table, int value)
+{
+    if (!hash_table)
+    {
+        fprintf(stderr, "ht_add: null pointer hash table.\n");
+        return 0;
+    }
+
+    if (hash_table->count >= hash_table->size)
+    {
+        fprintf(stderr, "ht_add: hash table is full.\n");
+        return 0;
+    }
+
+    int add_idx = hash_function(value, hash_table->size);
+    if (!hash_table->buckets[add_idx])
+    {
+        hash_table->buckets[add_idx] = ll_create();
+        if (!hash_table->buckets[add_idx])
+        {
+            fprintf(stderr, "ht_add: adding failed.\n");
+            return 0;
+        }
+    }
+    if (ll_contains(hash_table->buckets[add_idx], value))
+    {
+        fprintf(stderr, "ht_add: %d already exists.\n", value);
+        return 0;
+    }
+    ll_add_last(hash_table->buckets[add_idx], value);
+    hash_table->count++;
+}
+void ht_remove(HashTable *hash_table, int value)
+{
+    if (!hash_table)
+    {
+        fprintf(stderr, "ht_remove: null pointer hash table.\n");
+        return;
+    }
+
+    if (hash_table->count == 0)
+    {
+        fprintf(stderr, "ht_remove: hash table is full.\n");
+        return;
+    }
+
+    int idx = hash_function(value, hash_table->size);
+    if (!hash_table->buckets[idx])
+    {
+        fprintf(stderr, "ht_remove: %d not exists.\n", value);
+        return;
+    }
+    int index_in_ll = ll_index_of(hash_table->buckets[idx], value);
+    if (index_in_ll == -1)
+    {
+        fprintf(stderr, "ht_remove: %d not exists.\n", value);
+        return;
+    }
+    ll_remove(hash_table->buckets[idx], index_in_ll);
+    hash_table->size--;
+}
