@@ -96,7 +96,7 @@ void ht_remove(HashTable *hash_table, int value)
 
     if (hash_table->count == 0)
     {
-        fprintf(stderr, "ht_remove: hash table is full.\n");
+        fprintf(stderr, "ht_remove: hash table is empty.\n");
         return;
     }
 
@@ -114,4 +114,26 @@ void ht_remove(HashTable *hash_table, int value)
     }
     ll_remove(hash_table->buckets[idx], index_in_ll);
     hash_table->size--;
+}
+
+int ht_is_empty(HashTable *hash_table)
+{
+    if (!hash_table)
+    {
+        fprintf(stderr, "ht_is_empty: null pointer hash table.\n");
+        return 1;
+    }
+
+    return hash_table->count == 0;
+}
+
+int ht_size(HashTable *hash_table)
+{
+    if (!hash_table)
+    {
+        fprintf(stderr, "ht_size: null pointer hash table.\n");
+        return 0;
+    }
+
+    return hash_table->count;
 }
