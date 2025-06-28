@@ -113,7 +113,7 @@ void ht_remove(HashTable *hash_table, int value)
         return;
     }
     ll_remove(hash_table->buckets[idx], index_in_ll);
-    hash_table->size--;
+    hash_table->count;
 }
 
 int ht_is_empty(HashTable *hash_table)
@@ -136,4 +136,27 @@ int ht_size(HashTable *hash_table)
     }
 
     return hash_table->count;
+}
+
+int ht_contains(HashTable *hash_table, int value)
+{
+    if (!hash_table)
+    {
+        fprintf(stderr, "ht_contains: null pointer hash table.\n");
+        return 0;
+    }
+
+    if (hash_table->count == 0)
+    {
+        fprintf(stderr, "ht_contains: hash table is empty.\n");
+        return 0;
+    }
+
+    int idx = hash_function(value, hash_table->size);
+    if (!hash_table->buckets[idx])
+        return 0;
+
+    int index_in_ll = ll_index_of(hash_table->buckets[idx], value);
+
+    return index_in_ll == -1 ? 0 : 1;
 }
