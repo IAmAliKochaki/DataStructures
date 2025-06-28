@@ -50,7 +50,7 @@ void ht_destroy(HashTable *hash_table)
 
 static int hash_function(int value, int size)
 {
-    return value % size;
+    return (value >= 0 ? value : -value) % size;
 }
 
 // Adds a value to the table (returns 1 on success, 0 on failure).
@@ -85,6 +85,7 @@ int ht_add(HashTable *hash_table, int value)
     }
     ll_add_last(hash_table->buckets[add_idx], value);
     hash_table->count++;
+    return 1;
 }
 void ht_remove(HashTable *hash_table, int value)
 {
@@ -113,7 +114,7 @@ void ht_remove(HashTable *hash_table, int value)
         return;
     }
     ll_remove(hash_table->buckets[idx], index_in_ll);
-    hash_table->count;
+    hash_table->count--;
 }
 
 int ht_is_empty(HashTable *hash_table)
