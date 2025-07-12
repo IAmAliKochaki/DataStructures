@@ -102,3 +102,83 @@ int bst_insert(BST *bst, int value)
     bst->size++;
     return 1;
 }
+
+static Node *min_node(const Node *node)
+{
+    while (node->left)
+        node = node->left;
+    return node;
+}
+
+static Node *max_node(const Node *node)
+{
+    while (node->right)
+        node = node->right;
+    return node;
+}
+
+static Node *find_node_by_value(Node *root, int value)
+{
+    if (!root)
+        return NULL;
+    if (value == root->key)
+        return root;
+    if (value < root->key)
+        return find_node_by_value(root->left, value);
+    return find_node_by_value(root->right, value);
+}
+
+Node *predecessor(const BST *bst, int value)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_predecessor: null pointer binary search tree.\n");
+        return NULL;
+    }
+
+    Node *node = find_node_by_value(bst->root, value);
+    if (!node)
+    {
+        fprintf(stderr, "bst_predecessor: %d not exists.\n", value);
+        return NULL;
+    }
+
+    if (node->left)
+        return max_node(node->left);
+
+    Node *node_parent = node->parent;
+    while (node_parent && node == node_parent->left)
+    {
+        node = node_parent;
+        node_parent = node_parent->parent;
+    }
+    return node_parent;
+}
+
+Node *successor(const BST *bst, int value)
+{
+
+    if (!bst)
+    {
+        fprintf(stderr, "bst_successor: null pointer binary search tree.\n");
+        return NULL;
+    }
+
+    Node *node = find_node_by_value(bst->root, value);
+    if (!node)
+    {
+        fprintf(stderr, "bst_successor: %d not exists.\n", value);
+        return NULL;
+    }
+
+    if (node->right)
+        return min_node(node->right);
+
+    Node *node_parent = node->parent;
+    while (node_parent && node == node_parent->right)
+    {
+        node = node_parent;
+        node_parent = node_parent->parent;
+    }
+    return node_parent;
+}

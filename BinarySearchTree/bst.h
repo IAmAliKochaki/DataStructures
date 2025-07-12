@@ -29,6 +29,9 @@ int bst_contains(const BST *bst, int value); // Return 1 if the value exists in 
 int bst_min(const BST *bst);
 int bst_max(const BST *bst);
 
+Node *predecessor(const BST *bst, int value); // Returns the in-order predecessor node (or NULL if none exists)
+Node *successor(const BST *bst, int value);   // Returns the in-order successor node (or NULL if none exists)
+
 /*
     Return a dynamically allocated array of all elements in the BST.
     - Inorder:    Left → Root → Right
