@@ -182,3 +182,54 @@ Node *successor(const BST *bst, int value)
     }
     return node_parent;
 }
+
+static void transplant(BST *bst, Node *old_child, Node *new_child)
+{
+    // old_child is root
+    if (!old_child->parent)
+        bst->root = new_child;
+    else if (old_child == old_child->parent->left)
+        old_child->parent->left = new_child;
+    else
+        old_child->parent->right = new_child;
+    if (new_child)
+        new_child->parent = old_child->parent;
+}
+
+int bst_remove(BST *bst, int value)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_remove: null pointer binary search tree.\n");
+        return 0;
+    }
+
+    Node *node = find_node_by_value(bst->root, value);
+    if (!node)
+    {
+        fprintf(stderr, "bst_remove: %d not exists.\n", value);
+        return 0;
+    }
+
+    if (!node->left)
+        transplant(bst, node, node->right);
+    else if (!node->right)
+        transplant(bst, node, node->left);
+    else
+    {
+        Node *n_s_root = min_node(node->right); // n_s_root: new subtree root
+        if (n_s_root->parent != node)
+        {
+            transplant(bst, n_s_root, n_s_root->right);
+            n_s_root->right = node->right;
+            node->right->parent = n_s_root;
+        }
+        transplant(bst, node, n_s_root);
+        n_s_root->left = node->left;
+        node->left->parent = n_s_root;
+    }
+
+    free(node);
+    bst->size--;
+    return 1;
+}
