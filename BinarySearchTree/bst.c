@@ -233,3 +233,168 @@ int bst_remove(BST *bst, int value)
     bst->size--;
     return 1;
 }
+
+Node *bst_search(const BST *bst, int value)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_search: null pointer binary search tree.\n");
+        return NULL;
+    }
+
+    Node *current = bst->root;
+    while (current)
+    {
+        if (value == current->key)
+            return current;
+        if (value < current->key)
+            current = current->left;
+        else
+            current = current->right;
+    }
+
+    return NULL;
+}
+
+int bst_contains(const BST *bst, int value)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_contains: null pointer binary search tree.\n");
+        return 0;
+    }
+
+    Node *current = bst->root;
+    while (current)
+    {
+        if (value == current->key)
+            return 1;
+        if (value < current->key)
+            current = current->left;
+        else
+            current = current->right;
+    }
+
+    return 0;
+}
+
+static void inorder_traverse(Node *root, int *list, int *adding_index)
+{
+    if (root)
+    {
+        inorder_traverse(root->left, list, adding_index);
+        list[*adding_index] = root->key;
+        (*adding_index)++;
+        inorder_traverse(root->right, list, adding_index);
+    }
+}
+
+int *bst_inorder_traverse(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_inorder_traverse: null pointer binary search tree.\n");
+        return NULL;
+    }
+    if (bst->size == 0)
+        return NULL;
+
+    int *traverse = (int *)malloc(sizeof(int) * bst->size);
+    if (!traverse)
+    {
+        fprintf(stderr, "bst_inorder_traverse: memory allocation failed.\n");
+        return NULL;
+    }
+    int index = 0;
+    inorder_traverse(bst->root, traverse, &index);
+
+    return traverse;
+}
+
+static void preorder_traverse(Node *root, int *list, int *adding_index)
+{
+    if (root)
+    {
+        list[*adding_index] = root->key;
+        (*adding_index)++;
+        preorder_traverse(root->left, list, adding_index);
+        preorder_traverse(root->right, list, adding_index);
+    }
+}
+
+int *bst_preorder_traverse(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_preorder_traverse: null pointer binary search tree.\n");
+        return NULL;
+    }
+    if (bst->size == 0)
+        return NULL;
+
+    int *traverse = (int *)malloc(sizeof(int) * bst->size);
+    if (!traverse)
+    {
+        fprintf(stderr, "bst_preorder_traverse: memory allocation failed.\n");
+        return NULL;
+    }
+    int index = 0;
+    preorder_traverse(bst->root, traverse, &index);
+
+    return traverse;
+}
+
+static void postorder_traverse(Node *root, int *list, int *adding_index)
+{
+    if (root)
+    {
+        postorder_traverse(root->left, list, adding_index);
+        postorder_traverse(root->right, list, adding_index);
+        list[*adding_index] = root->key;
+        (*adding_index)++;
+    }
+}
+
+int *bst_postorder_traverse(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_postorder_traverse: null pointer binary search tree.\n");
+        return NULL;
+    }
+    if (bst->size == 0)
+        return NULL;
+
+    int *traverse = (int *)malloc(sizeof(int) * bst->size);
+    if (!traverse)
+    {
+        fprintf(stderr, "bst_postorder_traverse: memory allocation failed.\n");
+        return NULL;
+    }
+    int index = 0;
+    postorder_traverse(bst->root, traverse, &index);
+
+    return traverse;
+}
+
+size_t bst_size(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_size: null pointer binary search tree.\n");
+        return 0;
+    }
+
+    return bst->size;
+}
+
+int bst_is_empty(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_is_empty: null pointer binary search tree.\n");
+        return 1;
+    }
+
+    return bst->size == 0;
+}
