@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 #include "bst.h"
 
 BST *bst_create()
@@ -62,8 +63,7 @@ static int insert_to_bst(Node *node, Node *new_node)
         }
         insert_to_bst(node->left, new_node);
     }
-
-    if (new_node->key > node->key) // go to the right subtree
+    else if (new_node->key > node->key) // go to the right subtree
     {
         if (node->right == NULL)
         {
@@ -73,8 +73,8 @@ static int insert_to_bst(Node *node, Node *new_node)
         }
         insert_to_bst(node->right, new_node);
     }
-
-    return 0;
+    else
+        return 0;
 }
 
 int bst_insert(BST *bst, int value)
@@ -103,14 +103,14 @@ int bst_insert(BST *bst, int value)
     return 1;
 }
 
-static Node *min_node(const Node *node)
+static Node *min_node(Node *node)
 {
     while (node->left)
         node = node->left;
     return node;
 }
 
-static Node *max_node(const Node *node)
+static Node *max_node(Node *node)
 {
     while (node->right)
         node = node->right;
@@ -276,6 +276,28 @@ int bst_contains(const BST *bst, int value)
     }
 
     return 0;
+}
+
+int bst_min(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_min: null pointer binary search tree.\n");
+        return INT_MAX;
+    }
+
+    return min_node(bst->root)->key;
+}
+
+int bst_max(const BST *bst)
+{
+    if (!bst)
+    {
+        fprintf(stderr, "bst_max: null pointer binary search tree.\n");
+        return INT_MIN;
+    }
+
+    return max_node(bst->root)->key;
 }
 
 static void inorder_traverse(Node *root, int *list, int *adding_index)
