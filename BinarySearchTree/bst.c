@@ -61,7 +61,7 @@ static int insert_to_bst(Node *node, Node *new_node)
             new_node->parent = node;
             return 1;
         }
-        insert_to_bst(node->left, new_node);
+        return insert_to_bst(node->left, new_node);
     }
     else if (new_node->key > node->key) // go to the right subtree
     {
@@ -71,7 +71,7 @@ static int insert_to_bst(Node *node, Node *new_node)
             new_node->parent = node;
             return 1;
         }
-        insert_to_bst(node->right, new_node);
+        return insert_to_bst(node->right, new_node);
     }
     else
         return 0;
@@ -97,6 +97,7 @@ int bst_insert(BST *bst, int value)
     else if (insert_to_bst(bst->root, new_node) == 0)
     {
         fprintf(stderr, "bst_insert: insert new value failed because duplication.\n");
+        free(new_node);
         return 0;
     }
     bst->size++;
@@ -117,15 +118,15 @@ static Node *max_node(Node *node)
     return node;
 }
 
-static Node *find_node_by_value(Node *root, int value)
+static Node *search(Node *root, int value)
 {
     if (!root)
         return NULL;
     if (value == root->key)
         return root;
     if (value < root->key)
-        return find_node_by_value(root->left, value);
-    return find_node_by_value(root->right, value);
+        return search(root->left, value);
+    return search(root->right, value);
 }
 
 Node *predecessor(const BST *bst, int value)
@@ -136,7 +137,7 @@ Node *predecessor(const BST *bst, int value)
         return NULL;
     }
 
-    Node *node = find_node_by_value(bst->root, value);
+    Node *node = search(bst->root, value);
     if (!node)
     {
         fprintf(stderr, "bst_predecessor: %d not exists.\n", value);
@@ -164,7 +165,7 @@ Node *successor(const BST *bst, int value)
         return NULL;
     }
 
-    Node *node = find_node_by_value(bst->root, value);
+    Node *node = search(bst->root, value);
     if (!node)
     {
         fprintf(stderr, "bst_successor: %d not exists.\n", value);
@@ -204,7 +205,7 @@ int bst_remove(BST *bst, int value)
         return 0;
     }
 
-    Node *node = find_node_by_value(bst->root, value);
+    Node *node = search(bst->root, value);
     if (!node)
     {
         fprintf(stderr, "bst_remove: %d not exists.\n", value);
@@ -242,18 +243,7 @@ Node *bst_search(const BST *bst, int value)
         return NULL;
     }
 
-    Node *current = bst->root;
-    while (current)
-    {
-        if (value == current->key)
-            return current;
-        if (value < current->key)
-            current = current->left;
-        else
-            current = current->right;
-    }
-
-    return NULL;
+    return search(bst->root, value);
 }
 
 int bst_contains(const BST *bst, int value)
@@ -264,18 +254,7 @@ int bst_contains(const BST *bst, int value)
         return 0;
     }
 
-    Node *current = bst->root;
-    while (current)
-    {
-        if (value == current->key)
-            return 1;
-        if (value < current->key)
-            current = current->left;
-        else
-            current = current->right;
-    }
-
-    return 0;
+    return search(bst->root, value) == NULL ? 0 : 1;
 }
 
 int bst_min(const BST *bst)
@@ -283,6 +262,12 @@ int bst_min(const BST *bst)
     if (!bst)
     {
         fprintf(stderr, "bst_min: null pointer binary search tree.\n");
+        return INT_MAX;
+    }
+
+    if (!bst->root)
+    {
+        fprintf(stderr, "bst_min: tree is empty.\n");
         return INT_MAX;
     }
 
@@ -297,6 +282,12 @@ int bst_max(const BST *bst)
         return INT_MIN;
     }
 
+    if (!bst->root)
+    {
+        fprintf(stderr, "bst_max: tree is empty.\n");
+        return INT_MIN;
+    }
+
     return max_node(bst->root)->key;
 }
 
@@ -306,7 +297,7 @@ static void inorder_traverse(Node *root, int *list, int *adding_index)
     {
         inorder_traverse(root->left, list, adding_index);
         list[*adding_index] = root->key;
-        (*adding_index)++;
+        *adding_index += 1;
         inorder_traverse(root->right, list, adding_index);
     }
 }
