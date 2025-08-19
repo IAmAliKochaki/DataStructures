@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "avlt.h"
 
-#define MAX(a, b) ((a > b) ? a : b)
+static inline int MAX(int a, int b) { return (a > b) ? a : b; }
 
 AVLTree *avlt_create()
 {
@@ -19,13 +19,13 @@ AVLTree *avlt_create()
     return avlt;
 }
 
-static void free_avlt_node(AVLTNode *node)
+static void free_avlt_nodes(AVLTNode *node)
 {
     if (!node)
         return;
-    free_avlt_node(node->left);  // Free left subtree
-    free_avlt_node(node->right); // Free right subtree
-    free(node);                  // Free the node
+    free_avlt_nodes(node->left);  // Free left subtree
+    free_avlt_nodes(node->right); // Free right subtree
+    free(node);                   // Free the node
 }
 
 void avlt_destroy(AVLTree *avlt)
@@ -36,7 +36,7 @@ void avlt_destroy(AVLTree *avlt)
         return;
     }
 
-    free_avlt_node(avlt->root);
+    free_avlt_nodes(avlt->root);
     free(avlt);
 }
 
@@ -129,10 +129,6 @@ static void balancer(AVLTree *avlt, AVLTNode *node)
         // Reconnect parent or update root
         if (!node->parent)
             avlt->root = node;
-        else if (node->parent->left == node)
-            node->parent->left = node;
-        else
-            node->parent->right = node;
 
         update_height(node);
         node = node->parent;
@@ -152,7 +148,6 @@ static int insert_to_tree(AVLTree *avlt, AVLTNode *new_node)
             current = current->right;
         else
         {
-            fprintf(stderr, "insert_to_tree: try for insert duplicate value: %d\n", new_node->key);
             free(new_node);
             return 0;
         }
@@ -162,8 +157,8 @@ static int insert_to_tree(AVLTree *avlt, AVLTNode *new_node)
         previous->left = new_node;
     else
         previous->right = new_node;
-    
-    new_node->parent = previous;    
+
+    new_node->parent = previous;
     avlt->size++;
 
     balancer(avlt, new_node);
@@ -193,9 +188,108 @@ int avlt_insert(AVLTree *avlt, int value)
         return 1;
     }
 
-    else if (insert_to_tree(avlt, new_node) == 0)
+    if (insert_to_tree(avlt, new_node) == 0)
     {
         fprintf(stderr, "avlt_insert: insertion failed.\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+static AVLTNode *find_node_by_value(AVLTree *avlt, int value)
+{
+    AVLTNode *current = avlt->root;
+
+    while (current)
+    {
+        if (value < current->key)
+            current = current->left;
+        else if (value > current->key)
+            current = current->right;
+        else
+            return current;
+    }
+
+    return NULL;
+}
+
+static void transplant(AVLTree *avlt, AVLTNode *old_child, AVLTNode *new_child)
+{
+    // old_child is root
+    if (!old_child->parent)
+        avlt->root = new_child;
+    else if (old_child == old_child->parent->left)
+        old_child->parent->left = new_child;
+    else
+        old_child->parent->right = new_child;
+    if (new_child)
+        new_child->parent = old_child->parent;
+}
+
+static AVLTNode *min_node(AVLTNode *node)
+{
+    while (node->left)
+        node = node->left;
+    return node;
+}
+
+static int remove_node_from_tree(AVLTree *avlt, int value)
+{
+    AVLTNode *node = find_node_by_value(avlt, value);
+    if (!node)
+    {
+        fprintf(stderr, "remove_node_from_tree: try for remove an instance (%d) but it's not exist.\n", value);
+        return 0;
+    }
+
+    AVLTNode *balance_start = node->parent;
+
+    if (!node->left)
+        transplant(avlt, node, node->right);
+    else if (!node->right)
+        transplant(avlt, node, node->left);
+    else
+    {
+        AVLTNode *n_s_root = min_node(node->right); // successor
+        balance_start = n_s_root->parent;
+        if (n_s_root->parent != node)
+        {
+            transplant(avlt, n_s_root, n_s_root->right);
+            n_s_root->right = node->right;
+            node->right->parent = n_s_root;
+        }
+        transplant(avlt, node, n_s_root);
+        n_s_root->left = node->left;
+        node->left->parent = n_s_root;
+        balance_start = n_s_root;
+    }
+
+    free(node);
+    avlt->size--;
+
+    if (balance_start)
+        balancer(avlt, balance_start);
+    return 1;
+}
+
+int avlt_remove(AVLTree *avlt, int value)
+{
+    if (!avlt)
+    {
+        fprintf(stderr, "avlt_remove: null pointer avl-tree.\n");
+        return 0;
+    }
+
+    if (avlt->size <= 0)
+    {
+        fprintf(stderr, "avlt_remove: the tree is empty.\n");
+        return 0;
+    }
+
+    if (remove_node_from_tree(avlt, value) == 0)
+    {
+        fprintf(stderr, "avlt_remove: deletion failed.\n");
         return 0;
     }
 
