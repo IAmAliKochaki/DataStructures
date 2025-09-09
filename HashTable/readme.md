@@ -10,7 +10,6 @@ This project implements a **Hash Table** data structure in C using **separate ch
 - Check if the table is empty
 - Get the current number of elements
 - Graceful error handling for null pointers and duplicates
-- Minimum ta
 
 ## 🔧 API Overview
 
